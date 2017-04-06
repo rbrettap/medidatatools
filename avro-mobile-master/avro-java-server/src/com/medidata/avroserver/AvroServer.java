@@ -37,7 +37,7 @@ import com.medidata.avroserver.protocol.v1.*;
  * followed by constructing and encoding an Avro response. Supports both Avro
  * binary and JSON.
  * 
- * @author anthony@flurry
+ * @author rbrett@mdsol
  */
 public class AvroServer {
 
@@ -92,9 +92,9 @@ public class AvroServer {
 		System.exit(0);
 	}
 
-	protected AvroTwoWayRequest readRequest(InputStream is, String contentType)
+	protected AvroRequest readRequest(InputStream is, String contentType)
 			throws IOException {
-		AdRequest adRequest = null;
+		AvroRequest adRequest = null;
 
 		Decoder decoder = null;
 		if (contentType == null) {
@@ -104,14 +104,14 @@ public class AvroServer {
 		if (contentType.equals(BINARY_CONTENT_TYPE)) {
 			decoder = DECODER_FACTORY.binaryDecoder(is, null);
 		} else if (contentType.equals(JSON_CONTENT_TYPE)) {
-			decoder = DECODER_FACTORY.jsonDecoder(AdRequest.SCHEMA$, is);
+			decoder = DECODER_FACTORY.jsonDecoder(AvroRequest.SCHEMA$, is);
 		} else {
 			throw new IOException("Unknown content type for Two Way Request");
 
 		}
 
-		SpecificDatumReader<AdRequest> reader = new SpecificDatumReader<AdRequest>(
-				AdRequest.class);
+		SpecificDatumReader<AvroRequest> reader = new SpecificDatumReader<AvroRequest>(
+				AvroRequest.class);
 
 		try {
 			// Should only be 1 request object
@@ -130,32 +130,32 @@ public class AvroServer {
 		return adRequest;
 	}
 
-	protected byte[] getResponse(AdRequest request, String returnFormat)
+	protected byte[] getResponse(AvroRequest request, String returnFormat)
 			throws IOException {
 		// Demonstrate ad generation or error output
-		AdResponse adResponse = null;
+		AvroResponse adResponse = null;
 
 		if (request.getAdSpaceName().toString().equalsIgnoreCase("throwError")) {
 			List<CharSequence> errors = new ArrayList<CharSequence>();
 			errors.add((CharSequence) "Ad server has exploded.");
-			adResponse = AdResponse.newBuilder().setErrors(errors).setAds(new ArrayList<Ad>()).build();
+			adResponse = AvroResponse.newBuilder().setErrors(errors).setAds(new ArrayList<TwoWay>()).build();
 		} else {
 			// Generate a couple of sample ads
-			List<Ad> ads = new ArrayList<Ad>();
+			List<TwoWay> ads = new ArrayList<TwoWay>();
 
 			// Get Ad Space name from request and just make up a name of an Ad
-			Ad ad1 = Ad.newBuilder().setAdSpace(request.getAdSpaceName())
+			TwoWay ad1 = TwoWay.newBuilder().setAdSpace(request.getAdSpaceName())
 					.setAdName("Awesome App").build();
-			Ad ad2 = Ad.newBuilder().setAdSpace(request.getAdSpaceName())
+			TwoWay ad2 = TwoWay.newBuilder().setAdSpace(request.getAdSpaceName())
 					.setAdName("Even better App").build();
 			ads.add(ad1);
 			ads.add(ad2);
 
-			adResponse = AdResponse.newBuilder().setAds(ads).build();
+			adResponse = AvroResponse.newBuilder().setAds(ads).build();
 		}
 
-		SpecificDatumWriter<AdResponse> writer = new SpecificDatumWriter<AdResponse>(
-				AdResponse.class);
+		SpecificDatumWriter<AvroResponse> writer = new SpecificDatumWriter<AvroResponse>(
+				AvroResponse.class);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		if (returnFormat.equals(BINARY_CONTENT_TYPE)) {
@@ -174,7 +174,7 @@ public class AvroServer {
 			System.out.println("Returning json");
 
 			JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(
-					AdResponse.SCHEMA$, out);
+					AvroResponse.SCHEMA$, out);
 			writer.write(adResponse, jsonEncoder);
 			jsonEncoder.flush();
 			return out.toByteArray();
@@ -204,7 +204,7 @@ public class AvroServer {
 						+ request.getMethod());
 
 				// Read Avro request
-				AdRequest adRequest = avroServer.readRequest(
+				AvroRequest adRequest = avroServer.readRequest(
 						request.getInputStream(), request.getContentType());
 
 				// First determined return format. If accept header is specified

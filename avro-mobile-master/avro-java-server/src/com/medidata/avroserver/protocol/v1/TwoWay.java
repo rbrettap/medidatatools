@@ -6,7 +6,7 @@
 package com.medidata.avroserver.protocol.v1;  
 @SuppressWarnings("all")
 public class TwoWay extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Ad\",\"namespace\":\"com.flurry.avroserver.protocol.v1\",\"fields\":[{\"name\":\"adSpace\",\"type\":\"string\"},{\"name\":\"adName\",\"type\":\"string\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Ad\",\"namespace\":\"com.medidata.avroserver.protocol.v1\",\"fields\":[{\"name\":\"adSpace\",\"type\":\"string\"},{\"name\":\"adName\",\"type\":\"string\"}]}");
   @Deprecated public java.lang.CharSequence adSpace;
   @Deprecated public java.lang.CharSequence adName;
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
