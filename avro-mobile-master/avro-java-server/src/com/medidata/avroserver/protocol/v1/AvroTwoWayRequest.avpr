@@ -7,9 +7,9 @@
   			{"name": "lon", "type": "float", "default":0.0}
   		]
   	},
-  	{"name": "AvroRequest", "type": "record",
+  	{"name": "SubjectDataContainer", "type": "record",
   		"fields": [
-  			{"name": "adSpaceName", "type": "string"},
+  			{"name": "subjectUUID", "type": "string"},
   			{"name": "location", "type": "Location", "default": "null"}
   		]
   	}
